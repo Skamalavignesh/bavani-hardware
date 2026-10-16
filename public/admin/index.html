@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Admin – Bhavani Hardware</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div id="login" class="login hidden">
+    <form id="login-form" class="panel">
+      <h1>Admin login</h1>
+      <label>Password <input type="password" id="pw" autocomplete="current-password" required></label>
+      <button class="btn" type="submit">Log in</button>
+      <p class="err" id="login-err"></p>
+    </form>
+  </div>
+
+  <div id="app" class="hidden">
+    <header>
+      <strong>Bhavani Hardware – Admin</strong>
+      <nav id="tabs">
+        <button data-tab="products" class="on">Products</button>
+        <button data-tab="categories">Categories</button>
+        <button data-tab="shop">Shop details</button>
+        <button data-tab="extras">Brands &amp; reviews</button>
+        <button data-tab="password">Password</button>
+      </nav>
+      <span><a href="/" target="_blank">View site</a> · <button id="logout" class="link">Log out</button></span>
+    </header>
+    <div id="toast"></div>
+    <main id="main"></main>
+  </div>
+
+  <dialog id="dlg"></dialog>
+  <script src="admin.js"></script>
+</body>
+</html>
