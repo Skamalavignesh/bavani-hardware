@@ -2,6 +2,16 @@ const menuBtn = document.querySelector(".menu-btn");
 const navList = document.querySelector(".nav ul");
 if (menuBtn && navList) menuBtn.addEventListener("click", () => navList.classList.toggle("open"));
 
+// Live site data: from the admin-backed server when it exists, otherwise from the
+// static snapshot (data/site.json) used on static hosting such as GitHub Pages.
+async function loadSite() {
+  try {
+    const r = await fetch("api/site");
+    if (r.ok && (r.headers.get("content-type") || "").includes("json")) return await r.json();
+  } catch {}
+  return await (await fetch("data/site.json")).json();
+}
+
 // tiny DOM helper: el("div", {class:"card"}, "text" | node, ...)
 function el(tag, attrs = {}, ...kids) {
   const n = document.createElement(tag);
@@ -103,14 +113,14 @@ function reveal(root) {
 
 (async function init() {
   let data;
-  try { data = await (await fetch("/api/site")).json(); } catch { return; }
+  try { data = await loadSite(); } catch { return; }
   const { settings: s, categories: cats, products: prods } = data;
 
   document.querySelectorAll("[data-s]").forEach((n) => { n.textContent = s[n.dataset.s] || ""; });
   document.querySelectorAll(".logo").forEach((n) => n.replaceChildren(
-    s.logo ? el("img", { src: "/" + s.logo, alt: "", class: "logo-img" }) : null,
+    s.logo ? el("img", { src: s.logo, alt: "", class: "logo-img" }) : null,
     el("div", {}, s.shopName, el("span", {}, s.tagline))));
-  document.querySelectorAll("[data-img]").forEach((i) => { const v = s[i.dataset.img]; if (v) i.src = "/" + v; else i.remove(); });
+  document.querySelectorAll("[data-img]").forEach((i) => { const v = s[i.dataset.img]; if (v) i.src = v; else i.remove(); });
   renderFooter(s);
 
   const home = document.getElementById("home-cats");
@@ -151,7 +161,7 @@ if (form) {
     e.preventDefault();
     const f = new FormData(form);
     const text = `Hello, I am ${f.get("name")} (${f.get("contact")}). ${f.get("message")}`;
-    fetch("/api/site").then((r) => r.json()).then(({ settings }) => {
+    loadSite().then(({ settings }) => {
       window.open("https://wa.me/" + digits(settings.whatsapp) + "?text=" + encodeURIComponent(text), "_blank", "noopener");
     });
     document.querySelector(".form-msg").textContent = "Opening WhatsApp with your enquiry…";
